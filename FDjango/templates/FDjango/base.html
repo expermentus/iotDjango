@@ -14,61 +14,145 @@
         <p>Select devices and color</p>
 
         <form id="colorForm">
+            <span style="font-weight: bold; font-size: 24px;">All devices</span>
+            <br>
+            <br>
+            <span style="font-size: 16px;">Change color:</span>
+            <br>
             <input type="color" id="selcolor" value="#ff0000" /> <br><br>
+            <span style="font-size: 16px;">Set brightness:</span>
+            <br>
             <input type="range" id="selbrightness" value="100" min="0" max="100" /><br>
-            <button type="button" class="button" onclick="submitForm()">
-                <span class="text">Change devices colors submit</span>
+            <button type="button" class="button" onclick="submitFormAll()">
+                <span class="text">Alter light</span>
             </button>
         </form>
 
-        <button type="button" class="button" onclick="turnOffLight()">
-            <span class="text">Turn of all light</span>
+        <button type="button" class="button" onclick="turnOffLightAll()">
+            <span class="text">Turn off light</span>
         </button>
+        <br>
+        <br>
+
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+        <script>
+            // Your list of lights
+            list_of_lights = ["0xd87a3bfffe0f2231", "0x5cc7c1fffe355388"];
+
+            // Function to create a container for each light
+            function createLightContainer(lightId) {
+                var container = document.createElement('div');
+                container.className = 'container';
+                container.id = 'lightContainer_' + lightId;
+
+                // HTML content for each light container
+                container.innerHTML = `
+                    <form id="colorForm_${lightId}">
+                        <span style="font-weight: bold; font-size: 24px;">${lightId}</span>
+                        <br>
+                        <br>
+                        <span style="font-size: 16px;">Change color:</span>
+                        <br>
+                        <input type="color" id="selcolor_${lightId}" value="#ff0000" /> <br><br>
+                        <span style="font-size: 16px;">Set brightness:</span>
+                        <br>
+                        <input type="range" id="selbrightness_${lightId}" value="100" min="0" max="100" /><br>
+                        <button type="button" class="button" onclick="submitForm('${lightId}')">
+                            <span class="text">Alter light</span>
+                        </button>
+                    </form>
+
+                    <button type="button" class="button" onclick="turnOffLight('${lightId}')">
+                        <span class="text">Turn off light</span>
+                    </button>
+                `;
+
+                // Append the container to the body
+                document.body.appendChild(container);
+            }
+
+            // Function to initialize light containers
+            function initializeLightContainers() {
+                list_of_lights.forEach(function(lightId) {
+                    createLightContainer(lightId);
+                });
+            }
+
+            // Call the function to initialize light containers
+            initializeLightContainers();
 
 
+            function submitFormAll() {
+                var color = document.getElementById('selcolor').value;
+                var brightness = document.getElementById('selbrightness').value * 2.5;
+                changeColorAll(color, brightness);
+            }
+
+            function submitForm(lightId) {
+                var color = document.getElementById('selcolor_' + lightId).value;
+                var brightness = document.getElementById('selbrightness_' + lightId).value * 2.5;
+                changeColor(lightId, color, brightness);
+            }
+
+            function changeColorAll(color, brightness) {
+                color = encodeURIComponent(color);
+                $.ajax({
+                    url: '{% url "alter_light_all" %}?color=' + color + '&brightness=' + brightness,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        alert(data.result);
+                    },
+                    error: function(error) {
+                        console.error('Error calling Python function:', error);
+                    }
+                });
+            }
+
+            function changeColor(lightId, color, brightness) {
+                color = encodeURIComponent(color);
+                $.ajax({
+                    url: '{% url "alter_light" %}?lightId=' + lightId + '&color=' + color + '&brightness=' + brightness,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        alert(data.result);
+                    },
+                    error: function(error) {
+                        console.error('Error calling Python function:', error);
+                    }
+                });
+            }
+
+            function turnOffLightAll() {
+                $.ajax({
+                    url: '{% url "turn_off_light_all" %}',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        alert(data.result);
+                    },
+                    error: function(error) {
+                        console.error('Error calling Python function:', error);
+                    }
+                });
+            }
+
+            function turnOffLight(lightId) {
+                $.ajax({
+                    url: '{% url "turn_off_light" %}?lightId=' + lightId + '&state=OFF',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        alert(data.result);
+                    },
+                    error: function(error) {
+                        console.error('Error calling Python function:', error);
+                    }
+                });
+            }
+        </script>
     </div>
-
-
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-        list_of_lights = ["0xd87a3bfffe0f2231", "0x5cc7c1fffe355388"]
-
-        function submitForm() {
-            var color = document.getElementById('selcolor').value;
-            var brightness = document.getElementById('selbrightness').value * 2.5;
-            changeColor(color, brightness);
-        }
-
-        function changeColor(color, brightness) {
-            color = encodeURIComponent(color); // Encode the color parameter
-            $.ajax({
-                url: '{% url "alter_light" %}?color=' + color + '&brightness=' + brightness,
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    alert(data.result); // Handle the result as needed
-                },
-                error: function(error) {
-                    console.error('Error calling Python function:', error);
-                }
-            });
-        }
-
-        function turnOffLight() {
-            $.ajax({
-                url: '{% url "turn_off_light" %}?state=' + "OFF",
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    alert(data.result); // Handle the result as needed
-                },
-                error: function(error) {
-                    console.error('Error calling Python function:', error);
-                }
-            });
-        }
-
-
-    </script>
 </body>
 </html>

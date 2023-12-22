@@ -16,14 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from FDjango.views import loadBase
-from FDjango.views import alter_light
-from FDjango.views import turn_off_light
+from FDjango.views import loadBase, alter_light, alter_light_all, turn_off_light, turn_off_light_all
 
 
 urlpatterns = [
     path('', loadBase, name='home'),  # This is for the root path
+    path('alter_light_all/', alter_light_all, name='alter_light_all'),
     path('alter_light/', alter_light, name='alter_light'),
+    path('turn_off_light_all/', turn_off_light_all, name='turn_off_light_all'),
     path('turn_off_light/', turn_off_light, name='turn_off_light'),
     path('base/', loadBase, name='load_base'),
     path('admin/', admin.site.urls),
