@@ -9,7 +9,61 @@ import numpy as np
 def loadBase(request):
     return render(request, "FDjango/base.html")
 
+def loadClock(request):
+    return render(request, "FDjango/clock.html")
 
+def clock_start(request):
+    mqtt_broker_address = "test.mosquitto.org"
+    mqtt_broker_port = 1883
+
+    list_of_lights = ["0xd87a3bfffe0f2231", "0x5cc7c1fffe355388"]
+
+    mqtt_command_topic = f"zigbee2mqtt/play"
+
+    play_payload = {
+        "play": "play",
+    }
+
+    def on_connect(client, userdata, flags, rc):
+        print("Connected with result code " + str(rc))
+        client.subscribe(mqtt_command_topic)
+
+    def on_message(client, userdata, msg):
+        print(f"Received message on topic {msg.topic}: {msg.payload}")
+
+
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.connect(mqtt_broker_address, mqtt_broker_port, 60)
+
+    # Publish the payload to adjust brightness and turn on the lamp
+    client.publish(mqtt_command_topic, json.dumps(play_payload))
+
+    # Wait for a short time to allow the message to be sent
+    client.loop_start()
+    client.loop_stop()
+
+    for lamp in list_of_lights:
+        # Topic for publishing commands to Zigbee2MQTT
+        mqtt_command_topic = f"zigbee2mqtt/{lamp}/set"  # Replace with your device's topic
+
+        turn_on_payload = {
+            "state": "ON",
+        }
+
+        client = mqtt.Client()
+        client.on_connect = on_connect
+        client.on_message = on_message
+        client.connect(mqtt_broker_address, mqtt_broker_port, 60)
+
+        client.publish(mqtt_command_topic, json.dumps(turn_on_payload))
+
+        # Wait for a short time to allow the message to be sent
+        client.loop_start()
+        client.loop_stop()
+
+    return render(request, "FDjango/clock.html")
 
 def turn_off_light_all(request):
     mqtt_broker_address = "test.mosquitto.org"
@@ -20,8 +74,7 @@ def turn_off_light_all(request):
         # Topic for publishing commands to Zigbee2MQTT
         mqtt_command_topic = f"zigbee2mqtt/{lamp}/set"  # Replace with your device's topic
 
-        # Payload to adjust brightness and turn on the lamp
-        brightness_increase_payload = {
+        turn_off_payload = {
             "state": "OFF",
         }
 
@@ -39,8 +92,7 @@ def turn_off_light_all(request):
         client.on_message = on_message
         client.connect(mqtt_broker_address, mqtt_broker_port, 60)
 
-        # Publish the payload to adjust brightness and turn on the lamp
-        client.publish(mqtt_command_topic, json.dumps(brightness_increase_payload))
+        client.publish(mqtt_command_topic, json.dumps(turn_off_payload))
 
         # Wait for a short time to allow the message to be sent
         client.loop_start()
