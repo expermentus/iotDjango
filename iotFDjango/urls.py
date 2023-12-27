@@ -20,8 +20,8 @@ from FDjango.views import loadBase, loadClock, clock_start, alter_light, alter_l
 
 
 urlpatterns = [
-    path('', loadBase, name='home'),  # This is for the root path
-    path('clock/', loadClock, name='clock'),
+    path('lights/', loadBase, name='home'),
+    path('', loadClock, name='clock'),
     path('clock_start/', clock_start, name='clock_start'),
     path('alter_light_all/', alter_light_all, name='alter_light_all'),
     path('alter_light/', alter_light, name='alter_light'),

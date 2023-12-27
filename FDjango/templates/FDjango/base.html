@@ -10,9 +10,8 @@
 </head>
 <body>
     <div class="text-center center-div">
-        <h1>Slet ikke stjælet design</h1>
-        <p>Select devices and color</p>
-
+        <h1>Design your lights</h1>
+        <br><br>
         <form id="colorForm">
             <span style="font-weight: bold; font-size: 24px;">All devices</span>
             <br>
@@ -22,17 +21,16 @@
             <input type="color" id="selcolor" value="#ff0000" /> <br><br>
             <span style="font-size: 16px;">Set brightness:</span>
             <br>
-            <input type="range" id="selbrightness" value="100" min="0" max="100" /><br>
+            <input type="range" id="selbrightness" value="100" min="0" max="100" /><br><br>
             <button type="button" class="button" onclick="submitFormAll()">
                 <span class="text">Alter light</span>
             </button>
         </form>
 
-        <button type="button" class="button" onclick="turnOffLightAll()">
+        <button type="button" class="button" onclick="turnOffLightAll()" style="margin-bottom: 80px">
             <span class="text">Turn off light</span>
         </button>
-        <br>
-        <br>
+
 
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
@@ -45,6 +43,7 @@
                 var container = document.createElement('div');
                 container.className = 'container';
                 container.id = 'lightContainer_' + lightId;
+                container.style.margin = '10px 10px 10px 10px';
 
                 // HTML content for each light container
                 container.innerHTML = `
