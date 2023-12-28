@@ -84,6 +84,12 @@
                             delayInSeconds = 0 - delayInSeconds
                         }
 
+                        try{
+                            clearTimeout(timeoutId);
+                            containerClock.style.display = 'none';
+                        }catch (error) {
+                        console.error(error)}
+
                         if (delayInSeconds > 0) {
                             containerClock.style.display = 'block'
                             timeoutId = setTimeout(function () {

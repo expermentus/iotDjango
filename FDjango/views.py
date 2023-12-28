@@ -75,7 +75,8 @@ def turn_off_light_all(request):
         mqtt_command_topic = f"zigbee2mqtt/{lamp}/set"  # Replace with your device's topic
 
         turn_off_payload = {
-            "state": "OFF",
+            "state": "ONcd"
+                     "",
         }
 
         def on_connect(client, userdata, flags, rc):
